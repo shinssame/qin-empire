@@ -1,0 +1,555 @@
+/* =========================================================
+   style.css
+   -----------------------------------------------------------
+   디자인 컨셉: 조선 궁궐의 밤(먹색 남색) + 한지(hanji) 대화창
+              + 금박 강조선 + 인장(붉은 도장)색 포인트
+   애니메이션은 요구사항에 따라 "Fade(투명도 전환)"만 사용합니다.
+   ========================================================= */
+
+:root {
+  /* ---- 색상 토큰 ---- */
+  --c-ink-navy: #0d1b2a;      /* 전체 배경 바탕 */
+  --c-ink-navy-2: #16283d;    /* 보조 배경 */
+  --c-hanji: #ede4d3;         /* 대화창/카드 배경 (한지색) */
+  --c-hanji-dark: #ddd0b3;    /* 한지 그림자 톤 */
+  --c-gold: #c9a961;          /* 금박 강조선 */
+  --c-seal: #a13d3d;          /* 인장 붉은색 포인트 */
+  --c-text-dark: #2b2418;     /* 한지 위에 올라가는 어두운 글자 */
+  --c-text-light: #f3ead9;    /* 어두운 배경 위 밝은 글자 */
+  --c-jade: #4a6b5a;          /* 성공/좋은 능력치 포인트 */
+
+  /* ---- 타이포그래피 ---- */
+  --font-display: 'Song Myung', 'Noto Serif KR', Georgia, serif;
+  --font-body: 'Noto Serif KR', Georgia, serif;
+
+  /* ---- 레이아웃 ---- */
+  --max-width: 900px; /* PC에서 지나치게 넓어지지 않도록 제한 */
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent; /* 모바일 탭 시 파란 하이라이트 제거 */
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--c-ink-navy);
+  color: var(--c-text-light);
+  font-family: var(--font-body);
+  overflow: hidden; /* 비주얼노벨 특성상 스크롤 없이 화면 전환 */
+  /* 모바일에서 길게 눌러 텍스트 선택되는 것 방지 */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+/* =========================================================
+   화면 전환 공통 (screen) - 오직 Fade 만 사용
+   ========================================================= */
+.screen {
+  position: fixed;
+  inset: 0;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.screen.active {
+  display: flex;
+  opacity: 1;
+}
+/* 오버레이(설정 팝업)는 게임 화면 위에 겹쳐서 뜸 */
+.screen.overlay {
+  z-index: 50;
+  background: rgba(13, 27, 42, 0.75);
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================================================
+   1. 타이틀 화면
+   ========================================================= */
+#screen-title {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at top, #1b3a4b 0%, var(--c-ink-navy) 70%);
+  text-align: center;
+  padding: 24px;
+}
+.title-bg-deco {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.35) 100%);
+  pointer-events: none;
+}
+.title-wrap {
+  position: relative;
+  max-width: var(--max-width);
+  width: 100%;
+}
+.title-eyebrow {
+  letter-spacing: 0.2em;
+  font-size: 12px;
+  color: var(--c-gold);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+.title-main {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 8vw, 64px);
+  line-height: 1.25;
+  margin: 0 0 18px;
+  color: var(--c-text-light);
+}
+.title-main span {
+  color: var(--c-gold);
+}
+.title-desc {
+  font-size: clamp(14px, 2.4vw, 17px);
+  line-height: 1.7;
+  color: #c9c2b0;
+  margin-bottom: 36px;
+}
+.title-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 340px;
+  margin: 0 auto;
+}
+.title-footer {
+  margin-top: 28px;
+  font-size: 12px;
+  color: #8b8a7f;
+}
+
+/* =========================================================
+   버튼 공통 스타일
+   ========================================================= */
+.btn {
+  padding: 14px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+  min-height: 48px; /* 모바일 터치 최소 크기 확보 */
+}
+.btn:active {
+  transform: scale(0.98);
+}
+.btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: var(--c-gold);
+  color: #2b1d0e;
+}
+.btn-secondary {
+  background: rgba(243, 234, 217, 0.12);
+  color: var(--c-text-light);
+  border: 1px solid rgba(243, 234, 217, 0.35);
+}
+.btn-ghost {
+  background: transparent;
+  color: #c9c2b0;
+  text-decoration: underline;
+}
+.btn-danger-small {
+  background: var(--c-seal);
+  color: #fff;
+  padding: 8px 14px;
+  min-height: auto;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.btn:hover { opacity: 0.9; }
+
+/* =========================================================
+   2. 설정 팝업
+   ========================================================= */
+.settings-box {
+  background: var(--c-hanji);
+  color: var(--c-text-dark);
+  border-radius: 14px;
+  padding: 28px;
+  width: min(90vw, 420px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.settings-box h2 {
+  font-family: var(--font-display);
+  margin: 0 0 20px;
+  border-bottom: 2px solid var(--c-gold);
+  padding-bottom: 10px;
+}
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  font-size: 15px;
+}
+.toggle-btn {
+  padding: 8px 18px;
+  border-radius: 20px;
+  background: var(--c-jade);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+}
+.toggle-btn[data-on="false"] {
+  background: #999;
+}
+.speed-options { display: flex; gap: 6px; }
+.speed-btn {
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid var(--c-hanji-dark);
+  font-size: 12px;
+}
+.speed-btn.selected {
+  background: var(--c-gold);
+  border-color: var(--c-gold);
+  color: #2b1d0e;
+}
+.settings-box .btn-primary { width: 100%; margin-top: 6px; }
+
+/* =========================================================
+   3. 게임 화면
+   ========================================================= */
+#screen-game {
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.bg-layer {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: opacity 0.6s ease; /* 배경 전환 Fade */
+  opacity: 1;
+  z-index: 0;
+}
+.bg-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.55) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ---- 상단 능력치 패널 ---- */
+.stat-panel {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, rgba(13,27,42,0.85), transparent);
+}
+.stat-item {
+  flex: 1;
+  min-width: 0;
+}
+.stat-label {
+  font-size: 11px;
+  color: var(--c-text-light);
+  display: block;
+  margin-bottom: 3px;
+  letter-spacing: 0.05em;
+}
+.stat-bar {
+  height: 8px;
+  border-radius: 5px;
+  background: rgba(255,255,255,0.15);
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.stat-fill {
+  height: 100%;
+  width: 50%;
+  background: linear-gradient(90deg, var(--c-gold), #e6c98a);
+  border-radius: 5px;
+  /* 능력치 변화 애니메이션 (fade 계열의 부드러운 전환, 이동 애니메이션은 width transition) */
+  transition: width 0.8s ease;
+}
+.icon-btn {
+  background: rgba(255,255,255,0.12);
+  color: var(--c-text-light);
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* ---- 챕터 전환 배너 ---- */
+.chapter-banner {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 30;
+  background: rgba(13,27,42,0.9);
+  border: 1px solid var(--c-gold);
+  padding: 18px 32px;
+  border-radius: 10px;
+  font-family: var(--font-display);
+  font-size: clamp(18px, 4vw, 26px);
+  color: var(--c-gold);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+  text-align: center;
+  max-width: 80vw;
+}
+.chapter-banner.show {
+  opacity: 1;
+}
+
+/* ---- 인게임 메뉴 팝업 ---- */
+.ingame-menu-popup {
+  position: absolute;
+  top: 56px;
+  right: 12px;
+  z-index: 20;
+  background: var(--c-hanji);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 200px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+.ingame-menu-popup.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.ingame-menu-popup .btn {
+  color: var(--c-text-dark);
+  padding: 10px;
+  font-size: 14px;
+  min-height: auto;
+}
+.ingame-menu-popup .btn-secondary { background: var(--c-hanji-dark); border: none; }
+
+/* ---- NPC 레이어 ---- */
+.npc-layer {
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  height: 62%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 2;
+  pointer-events: none;
+}
+.npc-image {
+  max-height: 100%;
+  max-width: 55%;
+  object-fit: contain;
+  opacity: 1;
+  transition: opacity 0.4s ease; /* NPC 이미지 교체 Fade */
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+}
+.npc-image.hidden { opacity: 0; }
+
+/* ---- 대화창 (비주얼노벨 스타일) ---- */
+.dialogue-box {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  max-width: var(--max-width);
+  background: var(--c-hanji);
+  color: var(--c-text-dark);
+  border-top: 3px solid var(--c-gold);
+  border-radius: 16px 16px 0 0;
+  padding: 18px 20px 26px;
+  min-height: 130px;
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.4);
+}
+.speaker-name {
+  display: inline-block;
+  background: var(--c-seal);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 4px 14px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  margin-top: -34px; /* 대화창 위로 살짝 걸치도록 */
+}
+.speaker-name.hidden { display: none; }
+.dialogue-text {
+  font-size: clamp(15px, 2.6vw, 18px);
+  line-height: 1.75;
+  margin: 0;
+  min-height: 4.5em;
+  white-space: pre-wrap;
+}
+.continue-indicator {
+  position: absolute;
+  right: 20px;
+  bottom: 14px;
+  color: var(--c-seal);
+  font-size: 18px;
+  animation: bounce-fade 1.2s infinite;
+}
+.continue-indicator.hidden { display: none; }
+@keyframes bounce-fade {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* ---- 선택지 버튼 ---- */
+.choice-container {
+  position: absolute;
+  bottom: 148px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  width: 100%;
+  max-width: var(--max-width);
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.choice-container.show { opacity: 1; }
+.choice-container.hidden { display: none; }
+.choice-btn {
+  background: rgba(237, 228, 211, 0.96);
+  color: var(--c-text-dark);
+  border: 2px solid var(--c-gold);
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 15px;
+  text-align: left;
+  line-height: 1.5;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+.choice-btn:hover { background: #fff; }
+.choice-btn:active { transform: scale(0.98); }
+
+/* =========================================================
+   4. 엔딩 화면
+   ========================================================= */
+#screen-ending {
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  padding: 40px 20px 60px;
+  background: radial-gradient(ellipse at top, #2c1b47 0%, var(--c-ink-navy) 65%);
+}
+.ending-wrap {
+  max-width: 640px;
+  width: 100%;
+  text-align: center;
+}
+.ending-eyebrow {
+  color: var(--c-gold);
+  letter-spacing: 0.15em;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.ending-title {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 5vw, 38px);
+  margin: 0 0 16px;
+}
+.ending-summary {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #d8d2c2;
+  margin-bottom: 26px;
+}
+.ending-stats {
+  background: rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+.ending-stat-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+.ending-stat-row .stat-bar { flex: 1; }
+.ending-stat-row .stat-name { width: 70px; flex-shrink: 0; }
+.ending-stat-row .stat-value { width: 34px; text-align: right; flex-shrink: 0; }
+
+.history-compare {
+  background: var(--c-hanji);
+  color: var(--c-text-dark);
+  border-radius: 12px;
+  padding: 22px;
+  margin: 20px 0;
+  text-align: left;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+.history-compare.hidden { display: none; opacity: 0; }
+.history-compare h3 {
+  font-family: var(--font-display);
+  margin-top: 0;
+  color: var(--c-seal);
+}
+.history-compare p {
+  line-height: 1.8;
+  font-size: 14px;
+}
+.ending-actions { margin-top: 16px; }
+
+/* =========================================================
+   5. 공통 유틸
+   ========================================================= */
+.hidden { display: none !important; }
+.fade-in { animation: fadeIn 0.5s ease forwards; }
+.fade-out { animation: fadeOut 0.5s ease forwards; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+/* =========================================================
+   반응형 - PC 화면 (가로 폭이 넓을 때는 중앙 정렬된 세로 카드 형태 유지)
+   ========================================================= */
+@media (min-width: 700px) {
+  .stat-panel { padding: 16px 24px; }
+  .dialogue-box { padding: 22px 32px 30px; border-radius: 20px 20px 0 0; }
+  .choice-container { bottom: 164px; }
+}
+
+/* 매우 작은 모바일 화면 보정 */
+@media (max-width: 360px) {
+  .stat-label { font-size: 9px; }
+  .dialogue-text { font-size: 14px; }
+}
+
+/* 화면 회전 대응: 가로모드에서 NPC 레이어가 과하게 커지지 않도록 제한 */
+@media (orientation: landscape) and (max-height: 500px) {
+  .npc-layer { height: 80%; }
+  .dialogue-box { min-height: 100px; padding-bottom: 14px; }
+  .dialogue-text { min-height: 3em; }
+}

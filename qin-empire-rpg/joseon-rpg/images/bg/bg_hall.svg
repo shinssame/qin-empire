@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#22223b"/>
+      <stop offset="100%" stop-color="#4a4e69"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#g)"/>
+  <text x="640" y="360" font-family="Georgia, serif" font-size="42" fill="#ffffff" fill-opacity="0.55" text-anchor="middle">편전 - 대신 알현</text>
+  <text x="640" y="410" font-family="Georgia, serif" font-size="18" fill="#ffffff" fill-opacity="0.35" text-anchor="middle">(배경 이미지 예시 - images/bg 폴더에서 교체하세요)</text>
+</svg>
